@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "BAUER GROUP - Header Authenticator (for Applications)",
+  "description": "Sending an Authentication Header for Application Access that are Secured with Headers Secret",
+  "icons": {
+    "16": "resources/icons/16x16.png",
+    "19": "resources/icons/19x19.png",
+    "24": "resources/icons/24x24.png",
+    "32": "resources/icons/32x32.png",
+    "48": "resources/icons/48x48.png",
+    "64": "resources/icons/64x64.png",
+    "128": "resources/icons/128x128.png"
+  },
+  "version": "0.0.8",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "webRequest",
+    "webRequestBlocking",
+    "webNavigation",
+    "debugger",
+    "https://*.app.bauer-group.com/*",
+    "wss://*.app.bauer-group.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.v2.js"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_popup": "options.html",
+    "default_title": "BAUER GROUP - HeaderAuthenticator"
+  }
+}

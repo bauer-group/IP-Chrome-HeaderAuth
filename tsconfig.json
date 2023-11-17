@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "sourceMap": true,
+        "strict": true,
+        "module": "es2020",
+        "moduleResolution": "node",
+        "target": "es6",
+        "lib": ["DOM", "ES2020"],
+        "types": ["chrome"]
+    },    
+    "exclude": [
+        "node_modules",
+
+        "updateVersion.ts",
+        "zipWithVersion.ts",
+        "buildIcons.ts"
+      ]
+}

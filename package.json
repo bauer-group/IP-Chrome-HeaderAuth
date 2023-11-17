@@ -1,0 +1,29 @@
+{
+  "name": "bauergroup-header-authenticator",
+  "description": "Sending an Authentication Header for Application Access",
+  "version": "0.0.5",
+  "devDependencies": {
+    "@types/archiver": "^6.0.1",
+    "@types/chrome": "^0.0.251",
+    "@types/node": "^20.9.1",
+    "archiver": "^6.0.1",
+    "bestzip": "^2.2.1",
+    "mkdirp": "^3.0.1",
+    "ncp": "^2.0.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^4.0.0"
+  },
+  "scripts": {
+    "build": "npm run _version-update && tsc && npm run _copy && npm run _zip",
+    "build-icons": "tsc -p tsconfig.tools.json && node ./dist-zip/buildIcons.js",
+    "clean": "rimraf ./dist ./dist-zip",
+    "_copy": "npm run _mkdirp && npm run _copy-assets",
+    "_mkdirp": "mkdirp ./dist/resources/icons",
+    "_copy-assets": "ncp ./manifest.json ./dist/manifest.json && ncp ./options.html ./dist/options.html && ncp ./resources/icons ./dist/resources/icons",
+    "_version-update": "tsc -p tsconfig.tools.json && node ./dist-zip/updateVersion.js",
+    "_zip": "tsc -p tsconfig.tools.json && node ./dist-zip/zipWithVersion.js"
+  },
+  "dependencies": {
+    "sharp": "^0.32.6"
+  }
+}
