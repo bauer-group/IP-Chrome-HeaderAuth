@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authSecret !== undefined) {
             chrome.storage.sync.set({ authSecret: authSecret }, () => {
                 console.log('Updated Authentication Secret: ' + authSecret);
+                window.close();
             });
         }
     });
