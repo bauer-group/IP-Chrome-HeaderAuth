@@ -19,7 +19,7 @@
     "clean": "rimraf ./dist ./dist-zip",
     "_copy": "npm run _mkdirp && npm run _copy-assets",
     "_mkdirp": "mkdirp ./dist/resources/icons",
-    "_copy-assets": "ncp ./manifest.json ./dist/manifest.json && ncp ./options.html ./dist/options.html && ncp ./resources/icons ./dist/resources/icons",
+    "_copy-assets": "ncp ./src/manifest.json ./dist/manifest.json && ncp ./src/options.html ./dist/options.html && ncp ./resources/icons ./dist/resources/icons",
     "_version-update": "tsc -p tsconfig.tools.json && node ./dist-zip/updateVersion.js",
     "_zip": "tsc -p tsconfig.tools.json && node ./dist-zip/zipWithVersion.js"
   },

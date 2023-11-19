@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as archiver from 'archiver';
 
 // Read the version from package.json
-const manifestJson = JSON.parse(fs.readFileSync('./manifest.json', 'utf8'));
+const manifestJson = JSON.parse(fs.readFileSync('./dist/manifest.json', 'utf8'));
 const version = manifestJson.version;
 
 // Create a zip file name with the version number

@@ -3,13 +3,11 @@
         "outDir": "./dist-zip",
         "strict": true
     },    
-    "include": ["**/*.ts"],
+    "include": [
+        "**/*.ts"
+    ],
     "exclude": [
         "node_modules",
-        
-        "options.ts",
-        "contentScript.ts",
-        "background.ts",        
-        "background.v2.ts"        
-      ]
+        "src/**/*.ts"
+    ]
 }

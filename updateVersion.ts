@@ -4,7 +4,7 @@ interface PackageJson {
     version?: string;
 }
 
-const filesToUpdate: string[] = ['manifest.json', 'manifest.v2.json'];
+const filesToUpdate: string[] = ['src/manifest.json'];
 
 filesToUpdate.forEach((file) => {
     try {

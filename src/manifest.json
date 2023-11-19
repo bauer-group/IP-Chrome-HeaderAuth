@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "BAUER GROUP - Header Authenticator (for Applications)",
   "description": "Sending an Authentication Header for Application Access that are Secured with Headers Secret",
   "icons": {
@@ -11,26 +11,36 @@
     "64": "resources/icons/64x64.png",
     "128": "resources/icons/128x128.png"
   },
-  "version": "0.0.10",
+  "version": "0.0.13",
   "permissions": [
     "storage",
-    "tabs",
     "activeTab",
-    "webRequest",
-    "webRequestBlocking",
-    "webNavigation",
-    "debugger",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.app.bauer-group.com/*"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "options.html",
+    "default_title": "BAUER GROUP - HeaderAuthenticator"
+  },
+  "host_permissions": [
     "https://*.app.bauer-group.com/*",
     "wss://*.app.bauer-group.com/*"
   ],
-  "background": {
-    "scripts": [
-      "background.v2.js"
-    ],
-    "persistent": true
-  },
-  "browser_action": {
-    "default_popup": "options.html",
-    "default_title": "BAUER GROUP - HeaderAuthenticator"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }
