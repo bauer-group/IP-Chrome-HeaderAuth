@@ -11,7 +11,7 @@
     "64": "resources/icons/64x64.png",
     "128": "resources/icons/128x128.png"
   },
-  "version": "0.0.13",
+  "version": "0.0.14",
   "permissions": [
     "storage",
     "activeTab",
@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.app.bauer-group.com/*"
+        "https://*.app.bauer-group.com/*"
       ],
       "js": [
         "contentScript.js"
