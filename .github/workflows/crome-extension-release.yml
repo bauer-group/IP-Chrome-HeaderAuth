@@ -37,8 +37,8 @@ jobs:
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add src/manifest.json
-          git commit -m "chore: update manifest.json version [skip ci]" || echo "No changes to commit"
+          git add src/manifest.json          
+          git commit -m "chore(manifest): bump version to ${{ steps.get_version.outputs.version }} [skip ci]" || echo "No changes to commit"
           git push origin master
 
       - name: Extract Version from manifest.json
