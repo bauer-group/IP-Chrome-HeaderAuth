@@ -33,9 +33,17 @@ jobs:
       - name: Build Extension (updates version, creates ZIP)
         run: npm run build
 
-      - name: Extract Version from package.json
+      - name: Commit updated manifest.json
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add src/manifest.json
+          git commit -m "chore: update manifest.json version [skip ci]" || echo "No changes to commit"
+          git push origin master
+
+      - name: Extract Version from manifest.json
         id: get_version
-        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+        run: echo "version=$(jq -r .version src/manifest.json)" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         run: |
