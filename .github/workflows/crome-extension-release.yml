@@ -44,7 +44,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git add src/manifest.json          
           git commit -m "chore(manifest): bump version to ${{ steps.get_version.outputs.version }} [skip ci]" || echo "No changes to commit"
-          git push origin master
+          git push origin ${{ github.ref_name }}
 
       - name: Create Tag
         run: |
