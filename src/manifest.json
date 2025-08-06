@@ -11,7 +11,7 @@
     "64": "resources/icons/64x64.png",
     "128": "resources/icons/128x128.png"
   },
-  "version": "0.0.15",
+  "version": "0.0.16",
   "permissions": [
     "storage",
     "activeTab",
