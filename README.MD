@@ -1,7 +1,3 @@
-Here's an improved README draft for the bauer-group/IP-Chrome-HeaderAuth repository, based on your request and the build information found in package.json. If you want even more details (e.g., API, architecture, contributing), please clarify your needs.
-
----
-
 # IP Chrome HeaderAuth
 
 **IP Chrome HeaderAuth** is a Chrome extension designed to send authentication headers for application access. This tool is useful for environments requiring header-based authentication, such as corporate web applications or internal tools.
