@@ -1,0 +1,25 @@
+Windows Registry Editor Version 5.00
+
+; BAUER GROUP Header Authenticator - force-install via enterprise policy.
+; The repository must be public: Chrome fetches updates.xml and the .crx anonymously.
+; Use ONE update channel per machine:
+;   self-hosted  -> .../releases/latest/download/updates.xml   (shown below)
+;   Web Store    -> https://clients2.google.com/service/update2/crx
+
+; --- Google Chrome ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist]
+"1"="jncjhkagdjiiohjfmbpmlemdchbkjaib;https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml"
+
+; --- Brave ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallForcelist]
+"1"="jncjhkagdjiiohjfmbpmlemdchbkjaib;https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml"
+
+; --- Microsoft Edge ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist]
+"1"="jncjhkagdjiiohjfmbpmlemdchbkjaib;https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml"
+
+; --- Optional: push the global master switch via managed storage (Chrome) ---
+; Full rule arrays are best pushed via the Admin console / Intune JSON
+; (see managed-config.example.json); simple values map directly here.
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\jncjhkagdjiiohjfmbpmlemdchbkjaib\policy]
+"masterEnabled"=dword:00000001

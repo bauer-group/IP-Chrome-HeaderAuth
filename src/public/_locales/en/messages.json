@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "BAUER GROUP - Header Authenticator"
+  },
+  "extDescription": {
+    "message": "Injects a configurable authentication header (secret GUID) into requests to protected services."
+  },
+  "extActionTitle": {
+    "message": "BAUER GROUP - Header Authenticator"
+  }
+}

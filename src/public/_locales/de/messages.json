@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "BAUER GROUP - Header Authenticator"
+  },
+  "extDescription": {
+    "message": "Sendet einen konfigurierbaren Authentifizierungs-Header (Secret-GUID) an geschützte Dienste."
+  },
+  "extActionTitle": {
+    "message": "BAUER GROUP - Header Authenticator"
+  }
+}

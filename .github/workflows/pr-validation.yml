@@ -1,0 +1,59 @@
+# =============================================================================
+# Pull Request Gates
+# =============================================================================
+# WHAT:  Conventional-commit validation, secret scanning, license compliance,
+#        and dependency review.
+# WHY:   These only make sense with a PR context — they diff head against base.
+#        ci.yml cannot host them: it also runs on push and as the release gate,
+#        where there is no PR to diff against.
+# WHEN:  Every pull request targeting main.
+# =============================================================================
+
+name: 🔍 PR Gates
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: pr-gates-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: ✅ Commits, Secrets & Licenses
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+      checks: write
+    uses: bauer-group/automation-templates/.github/workflows/modules-pr-validation.yml@main
+    with:
+      # Reads .github/config/commitlint.config.js. Without that file the step
+      # degrades silently under continue-on-error rather than failing.
+      enable-commit-lint: true
+      enable-security-scan: true
+      fail-on-security-issues: true
+      # Reported, not blocking: this repo ships MIT but pulls a broad React /
+      # Radix tree whose transitive licence metadata is noisy. A hard fail here
+      # would block PRs on someone else's package.json typo.
+      enable-license-check: true
+      fail-on-license-issues: false
+    secrets: inherit
+
+  dependency-review:
+    name: 🛡️ Dependency Review
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: bauer-group/automation-templates/.github/workflows/modules-dependency-review.yml@main
+    with:
+      fail-on-severity: 'high'
+      comment-summary-in-pr: 'on-failure'
+      # Runtime scope only. A dev-only advisory does not reach the shipped
+      # .crx, and blocking a PR on one trains people to bypass the gate.
+      fail-on-scopes: 'runtime'
