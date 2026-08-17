@@ -40,7 +40,7 @@
     "commit-msg": "npx --no -- commitlint --edit \"$1\""
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{ts,tsx,mjs}": [
       "eslint --fix",
       "prettier --write"
     ],
