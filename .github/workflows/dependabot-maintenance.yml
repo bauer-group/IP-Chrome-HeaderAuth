@@ -1,0 +1,43 @@
+# =============================================================================
+# Dependabot Maintenance
+# =============================================================================
+# WHAT:  Approves Dependabot PRs and enables GitHub's native auto-merge.
+# WHY:   Auto-merge waits for the required status checks, so ci.yml still
+#        decides. This only removes the human click from an update that has
+#        already proven itself green.
+# WHEN:  Every Dependabot pull request.
+#
+# REQUIRES: repository setting `allow_auto_merge = true` AND branch protection
+# with required status checks on main. Without required checks, auto-merge
+# merges immediately and this degrades into a rubber stamp.
+#
+# The module is named docker-maintenance-* for historical reasons; it is
+# ecosystem-agnostic and gates purely on the actor being dependabot[bot].
+# =============================================================================
+
+name: 🤖 Dependabot Maintenance
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  automerge:
+    name: 🔀 Auto-merge Dependabot PRs
+    # The module gates on the actor internally too; checking here as well
+    # avoids spinning up a runner for every human PR.
+    if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: bauer-group/automation-templates/.github/workflows/docker-maintenance-dependabot.yml@main
+    with:
+      # Squash keeps one commit per update, and Dependabot's PR title carries
+      # the conventional prefix from dependabot.yml (fix(deps) / chore(ci)) —
+      # so the squashed subject is what semantic-release reads.
+      merge-method: 'squash'
+      auto-approve: true
+    secrets: inherit

@@ -1,0 +1,41 @@
+# =============================================================================
+# CodeQL Analysis
+# =============================================================================
+# WHAT:  Static application security testing over the TypeScript/React source.
+# WHY:   This extension injects a secret header into outbound requests and holds
+#        GUID secrets in extension storage. Taint-tracking findings here are
+#        directly security-relevant rather than box-ticking.
+# WHEN:  Push to main, every PR, and weekly — advisories land after the code
+#        stops changing, which push triggers alone would never catch.
+# =============================================================================
+
+name: 🛡️ CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Mondays 04:17 UTC — off the hour, where the scheduler queue is shortest.
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: 🔎 Analyze
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      packages: read
+    uses: bauer-group/automation-templates/.github/workflows/modules-codeql.yml@main
+    with:
+      languages: 'javascript-typescript'
+      queries: 'security-extended'
+      # Findings surface in the Security tab rather than blocking merges. A SAST
+      # false positive that blocks every PR is how a team learns to bypass the
+      # gate entirely.
+      fail-on-findings: false

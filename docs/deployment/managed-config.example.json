@@ -1,0 +1,12 @@
+{
+  "masterEnabled": true,
+  "rules": [
+    {
+      "label": "BAUER GROUP Apps",
+      "domainPatterns": ["app.bauer-group.com"],
+      "headerName": "X-BAUERGROUP-Auth",
+      "secretValue": "REPLACE-WITH-YOUR-GUID-0000-000000000000",
+      "enabled": true
+    }
+  ]
+}

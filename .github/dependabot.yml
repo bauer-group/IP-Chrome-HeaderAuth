@@ -1,0 +1,74 @@
+# =============================================================================
+# Dependabot Configuration
+# =============================================================================
+# Watches:
+#   1. GitHub Actions versions
+#   2. npm dependencies (runtime + build tooling)
+#
+# COMMIT PREFIXES DECIDE WHETHER AN UPDATE SHIPS
+#   release.yml only publishes assets when semantic-release actually cuts a
+#   release (`if: needs.release.outputs.release-created == 'true'`). A
+#   `chore(...)` update therefore lands on main but never reaches a published
+#   .crx — it rides along with whatever releasing commit happens to come next,
+#   which for a security patch can be weeks.
+#
+#   So npm uses `fix(deps)` and cuts its own patch: in a bundled extension
+#   nearly everything except pure linting tooling ends up inside the shipped
+#   artifact, the build chain (wxt, vite, tailwind) very much included. GitHub
+#   Actions stays on `chore(ci)` — it never enters the bundle.
+#
+#   Grouping bounds the cost: one PR per ecosystem per week, so at most one
+#   patch release a week originates from dependency traffic.
+# =============================================================================
+
+version: 2
+updates:
+  # ---------------------------------------------------------------------------
+  # GitHub Actions
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'sunday'
+      time: '06:30'
+      timezone: 'Etc/UTC'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+      - 'dependabot'
+    commit-message:
+      prefix: 'chore(ci)'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  # ---------------------------------------------------------------------------
+  # npm
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'sunday'
+      time: '06:30'
+      timezone: 'Etc/UTC'
+    labels:
+      - 'dependencies'
+      - 'npm'
+      - 'dependabot'
+    commit-message:
+      prefix: 'fix(deps)'
+    groups:
+      npm:
+        patterns:
+          - '*'
+    ignore:
+      # TypeScript 7 breaks `npm run lint`: typescript-eslint@8 declares peer
+      # `typescript: ">=4.8.4 <6.1.0"`, TS 7 shipped without a stable
+      # programmatic API, and typescript-eslint closed TS7 support as
+      # "not planned". Without this entry the PR arrives weekly looking
+      # entirely harmless. Revisit when typescript-eslint ships TS7 support.
+      - dependency-name: 'typescript'
+        versions: ['>=7']

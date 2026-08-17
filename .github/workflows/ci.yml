@@ -1,0 +1,94 @@
+# =============================================================================
+# CI Gate
+# =============================================================================
+# WHAT:  Lint, format, typecheck, test with coverage, audit, and build all three
+#        browser targets.
+# WHY:   These gates used to live inside release.yml and therefore ran AFTER
+#        code had landed on main. This runs them before a merge is possible,
+#        and release.yml reuses this exact file via workflow_call so the
+#        pre-merge gate and the release gate cannot drift apart.
+# WHEN:  Every PR, every push to main, on demand, and as the release gate.
+# =============================================================================
+
+name: 🔍 CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: 🧪 Quality Gate
+    # nodejs-build.yml calls modules-code-quality.yml, which declares
+    # `pull-requests: write`. GitHub validates a called workflow's permissions
+    # when the run is CREATED — before any job `if:` — so this is required even
+    # though Sonar is off. Omitting the block does not help: a partial block
+    # sets every unnamed scope to none, and the repo default is already
+    # pull-requests: none. Without it: startup_failure, no job, no log.
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: bauer-group/automation-templates/.github/workflows/nodejs-build.yml@main
+    with:
+      package-manager: 'npm'
+      frozen-lockfile: true
+
+      # Node 24 is the floor declared in .nvmrc and engines.node; 26 becomes LTS
+      # on 2026-10-28 and is tested now so the promotion is a non-event.
+      #
+      # The versions are literals here rather than `node-version-file: .nvmrc`
+      # ON PURPOSE, against the usual house rule. nodejs-build.yml resolves the
+      # runtime as:
+      #   node-version: ${{ inputs.node-version-file == '' && (... matrix.node ...) || '' }}
+      # so passing node-version-file blanks node-version and setup-node reads
+      # .nvmrc instead — collapsing BOTH matrix legs onto Node 24. You get two
+      # identical green jobs and no forward coverage at all. The release job in
+      # release.yml is the one that pins .nvmrc, and it must stay single.
+      enable-matrix: true
+      matrix-node: '["24", "26"]'
+
+      run-lint: true
+      lint-command: 'npm run lint'
+      run-format-check: true
+      format-command: 'npm run format:check'
+      run-typecheck: true
+      typecheck-command: 'npm run typecheck'
+
+      # `npm run test:coverage` runs the suite once WITH coverage, and
+      # vitest.config.ts fails it below 80% on src/lib. test-coverage stays
+      # false deliberately: enabling it re-runs the whole suite a second time,
+      # and its `coverage-threshold` input is an unimplemented stub in the
+      # reusable ("# Add coverage threshold check logic here"), so relying on
+      # it would be a gate that silently passes everything.
+      run-tests: true
+      test-command: 'npm run test:coverage'
+      test-coverage: false
+
+      run-audit: true
+      audit-level: 'high'
+
+      # WXT builds one browser per invocation; three sequential builds take a
+      # few seconds each and keep this on the reusable rather than forcing a
+      # hand-rolled matrix.
+      build-command: 'npm run build && npm run build:firefox && npm run build:edge'
+
+      # The reusable's default artifact glob is dist|build|lib|coverage. WXT
+      # emits .output/, so without this nothing would be uploaded while the
+      # step still reported success.
+      upload-artifacts: true
+      artifact-name: 'extension-builds'
+      artifact-path: '.output'
+      artifact-retention-days: 14
+    secrets: inherit

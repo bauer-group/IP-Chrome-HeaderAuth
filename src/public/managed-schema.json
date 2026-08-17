@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "title": "BAUER GROUP Header Authenticator – Enterprise Policy",
+  "description": "Centrally provisioned protection rules (GPO/MDM). Read-only for the user.",
+  "properties": {
+    "masterEnabled": {
+      "type": "boolean",
+      "title": "Master switch",
+      "description": "Globally enable/disable header injection on managed devices."
+    },
+    "rules": {
+      "type": "array",
+      "title": "Protection rules",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Display name"
+          },
+          "domainPatterns": {
+            "type": "array",
+            "title": "Domains",
+            "items": { "type": "string" },
+            "description": "e.g. app.bauer-group.com or *.bauer-group.com"
+          },
+          "headerName": {
+            "type": "string",
+            "title": "Header name",
+            "description": "Defaults to X-BAUERGROUP-Auth"
+          },
+          "secretValue": {
+            "type": "string",
+            "title": "Secret (GUID)"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "required": ["label", "domainPatterns", "secretValue"]
+      }
+    }
+  }
+}

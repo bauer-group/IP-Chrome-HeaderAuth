@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens (Tailwind 4 CSS-first @theme). Dark mode is a token set, not a
+ * code path. shadcn/ui components read these via the `--color-*` custom props.
+ */
+@theme {
+  --color-background: oklch(99% 0.003 250);
+  --color-foreground: oklch(20% 0.02 250);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(20% 0.02 250);
+  --color-muted: oklch(96% 0.005 250);
+  --color-muted-foreground: oklch(50% 0.02 250);
+  --color-border: oklch(91% 0.008 250);
+  --color-input: oklch(91% 0.008 250);
+  --color-ring: oklch(55% 0.16 255);
+  --color-primary: oklch(48% 0.16 255);
+  --color-primary-foreground: oklch(99% 0.003 250);
+  --color-secondary: oklch(96% 0.005 250);
+  --color-secondary-foreground: oklch(25% 0.02 250);
+  --color-destructive: oklch(58% 0.2 25);
+  --color-destructive-foreground: oklch(99% 0.003 250);
+  --color-success: oklch(60% 0.15 150);
+  --color-warning: oklch(70% 0.16 75);
+  --color-accent: oklch(95% 0.02 255);
+  --color-accent-foreground: oklch(25% 0.02 250);
+  --color-popover: oklch(100% 0 0);
+  --color-popover-foreground: oklch(20% 0.02 250);
+
+  --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: oklch(20% 0.02 255);
+    --color-foreground: oklch(96% 0.005 250);
+    --color-card: oklch(24% 0.02 255);
+    --color-card-foreground: oklch(96% 0.005 250);
+    --color-muted: oklch(28% 0.02 255);
+    --color-muted-foreground: oklch(70% 0.02 250);
+    --color-border: oklch(33% 0.02 255);
+    --color-input: oklch(33% 0.02 255);
+    --color-primary: oklch(70% 0.15 255);
+    --color-primary-foreground: oklch(20% 0.02 255);
+    --color-secondary: oklch(30% 0.02 255);
+    --color-secondary-foreground: oklch(96% 0.005 250);
+    --color-accent: oklch(32% 0.02 255);
+    --color-accent-foreground: oklch(96% 0.005 250);
+    --color-popover: oklch(24% 0.02 255);
+    --color-popover-foreground: oklch(96% 0.005 250);
+  }
+}
+
+html,
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}

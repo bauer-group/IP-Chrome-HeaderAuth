@@ -1,0 +1,163 @@
+# =============================================================================
+# Release
+# =============================================================================
+# WHAT:  Gate → semantic release → publish signed assets → (optional) Chrome
+#        Web Store.
+# WHY:   The previous version called `npm version patch` unconditionally, so a
+#        feat: never produced a MINOR and a BREAKING CHANGE: never produced a
+#        MAJOR — the repo enforced Conventional Commits through commitlint and
+#        then discarded the information they carry. Its publish job also
+#        re-checked-out the pre-bump commit, so it could package a version
+#        other than the one released.
+# WHEN:  Push to main, or manual dispatch.
+#
+# NO concurrency group here on purpose: semantic-release hard-resets to origin,
+# and cancelling it mid-flight can leave a tag pushed with no release attached.
+# =============================================================================
+
+name: 🚀 Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      force-release:
+        description: 'force create release'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: 🔍 Gate
+    # The same file every PR runs — see ci.yml. pull-requests: write is the
+    # permission ceiling nodejs-build.yml imposes further down the chain.
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  release:
+    name: 📦 Semantic Release
+    needs: [gate]
+    if: needs.gate.result == 'success'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    uses: bauer-group/automation-templates/.github/workflows/modules-semantic-release.yml@main
+    with:
+      target-branch: 'main'
+      node-version: '24'
+      force-release: ${{ inputs.force-release || false }}
+    secrets: inherit
+
+  publish-assets:
+    name: 📤 Publish Release Assets
+    needs: [release]
+    if: needs.release.outputs.release-created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: 📥 Checkout release tag
+        uses: actions/checkout@v7
+        with:
+          # The released tag, NOT github.sha. semantic-release commits the
+          # version bump itself, so building from the pushed commit produces a
+          # .crx whose manifest version does not match the release it is
+          # attached to.
+          ref: ${{ needs.release.outputs.tag-name }}
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build & zip (Chrome, Firefox, Edge)
+        run: |
+          npm run build
+          npm run zip
+          npm run zip:firefox
+          npm run zip:edge
+
+      - name: 🔏 Sign CRX + generate updates.xml
+        env:
+          EXTENSION_PRIVATE_KEY: ${{ secrets.EXTENSION_PRIVATE_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        # Hard-fails when the secret is absent — the runner sets CI=true. A
+        # green release with no .crx leaves every force-installed client
+        # silently pinned to the old version.
+        run: npm run sign:crx
+
+      - name: 📎 Attach assets to the release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.release.outputs.tag-name }}
+          files: |
+            .output/*-chrome.zip
+            .output/*-firefox.zip
+            .output/*-edge.zip
+            .output/header-authenticator.crx
+            .output/updates.xml
+
+  publish-web-store:
+    name: 📤 Publish to Chrome Web Store
+    needs: [release, publish-assets]
+    # Wired but off. Set the repository variable PUBLISH_WEB_STORE=true and add
+    # the CWS_* secrets once a listing exists. v1 was never published from this
+    # repo and v2 pins a new extension ID, so there is nothing to update yet.
+    if: needs.release.outputs.release-created == 'true' && vars.PUBLISH_WEB_STORE == 'true'
+    # Best-effort: a Web Store hiccup stays a visible red job but must not
+    # invalidate a release whose GitHub assets already published correctly.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: 📥 Checkout release tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release.outputs.tag-name }}
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build & zip (Chrome)
+        run: |
+          npm run build
+          npm run zip
+
+      - name: 📤 Upload to Chrome Web Store
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+        run: |
+          ZIP="$(ls .output/*-chrome.zip | head -1)"
+          npx --yes chrome-webstore-upload-cli@3 upload \
+            --source "$ZIP" \
+            --extension-id "$CWS_EXTENSION_ID" \
+            --client-id "$CWS_CLIENT_ID" \
+            --client-secret "$CWS_CLIENT_SECRET" \
+            --refresh-token "$CWS_REFRESH_TOKEN"
