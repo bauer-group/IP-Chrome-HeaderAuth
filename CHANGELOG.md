@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.0...v2.1.1) (2026-08-17)
+
+### 🐛 Bug Fixes
+
+* **deps:** bump jsdom in the npm group across 1 directory ([#6](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/6)) ([c7ada22](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/c7ada2234d3e5544c4ed46d81a49dabc735d844c))
+
 ## [2.1.0](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.0.0...v2.1.0) (2026-08-17)
 
 ### 🚀 Features
