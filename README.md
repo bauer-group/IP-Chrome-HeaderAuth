@@ -84,6 +84,11 @@ The signing key pair gives the extension its stable ID. The **private** key is
 `wxt.config.ts`. Losing the private key changes the ID and breaks force-install
 policies — store it in the team password manager.
 
+Provision it with `npm run secrets:sync`, which reads `.keys/key.pem` directly
+and refuses to push a key that would derive a different extension ID. See
+[`docs/secrets.md`](docs/secrets.md) for the full set of repository secrets and
+which ones are inherited from the organization instead.
+
 ## Security notes
 
 - **Shipped code has 0 known vulnerabilities.** The dev-only audit findings trace to

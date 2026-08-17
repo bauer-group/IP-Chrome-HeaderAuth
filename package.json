@@ -28,6 +28,10 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "sign:crx": "node scripts/sign-crx.mjs",
+    "secrets:push": "node scripts/secrets/sync.mjs --push-only",
+    "secrets:sync": "node scripts/secrets/sync.mjs",
+    "secrets:sync:dry": "node scripts/secrets/sync.mjs --dry-run",
+    "secrets:list": "node scripts/secrets/list.mjs",
     "postinstall": "wxt prepare",
     "prepare": "simple-git-hooks"
   },
