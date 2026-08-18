@@ -8,6 +8,7 @@ import { buildRule } from '../lib/dnr/build-rules';
 import { applyRules } from '../lib/dnr/apply-rules';
 import { describeError, writeHealth } from '../lib/dnr/health';
 import { patternsToOrigins } from '../lib/permissions';
+import { serialTask } from '../lib/serial-task';
 
 /**
  * Recompute the effective config and apply the resulting declarativeNetRequest rules,
@@ -49,9 +50,16 @@ async function refreshRules(): Promise<void> {
   }
 }
 
+/**
+ * Every trigger goes through here. The refresh is a read-modify-write against the DNR
+ * engine, and a single saveConfig() fires up to four storage events — overlapping runs
+ * would race on the installed rule ids and fail the later write on a duplicate id.
+ */
+const scheduleRefresh = serialTask(refreshRules);
+
 export default defineBackground(() => {
-  void refreshRules();
-  onConfigChanged(() => void refreshRules());
-  browser.permissions.onAdded.addListener(() => void refreshRules());
-  browser.permissions.onRemoved.addListener(() => void refreshRules());
+  scheduleRefresh();
+  onConfigChanged(scheduleRefresh);
+  browser.permissions.onAdded.addListener(scheduleRefresh);
+  browser.permissions.onRemoved.addListener(scheduleRefresh);
 });
