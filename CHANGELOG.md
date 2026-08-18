@@ -1,3 +1,9 @@
+## [2.2.3](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.2...v2.2.3) (2026-08-18)
+
+### 🐛 Bug Fixes
+
+* **permissions:** dropped to the host-scoped declarativeNetRequest permission ([30cffa2](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/30cffa2ce2ca1b7db8f98a1767d81ab3ec9b05a0))
+
 ## [2.2.2](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.1...v2.2.2) (2026-08-18)
 
 ### 🐛 Bug Fixes
