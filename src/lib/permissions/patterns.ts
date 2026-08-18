@@ -11,17 +11,46 @@ export function patternToRequestDomain(pattern: string): string {
 }
 
 /**
- * Domain pattern → host-permission match patterns (https + wss).
- * A leading `*.` host pattern matches the apex domain AND all subdomains, which
- * aligns with DNR `requestDomains` subdomain semantics.
+ * Domain pattern → the host half of a match pattern. A leading `*.` matches the apex
+ * domain AND all subdomains, which aligns with DNR `requestDomains` semantics.
  */
-export function patternToOrigins(pattern: string): string[] {
+function patternToHost(pattern: string): string {
   const trimmed = pattern.trim().toLowerCase();
-  const host = trimmed.startsWith('*.') ? trimmed : `*.${trimmed}`;
-  return [`https://${host}/*`, `wss://${host}/*`];
+  return trimmed.startsWith('*.') ? trimmed : `*.${trimmed}`;
 }
 
-/** Flatten + de-duplicate the origins for a set of domain patterns. */
+/**
+ * The origins a rule NEEDS to function — `https://` only.
+ *
+ * Chrome documents exactly four match-pattern schemes (`http`, `https`, `file`, `*`),
+ * so this is the only set a grant check or a UI status may safely depend on. Anything
+ * built on top of a scheme Chrome may reject would report every rule as ungranted the
+ * day that rejection starts.
+ */
+export function patternToOrigins(pattern: string): string[] {
+  return [`https://${patternToHost(pattern)}/*`];
+}
+
+/**
+ * The extra `wss://` origins that carry the header onto WebSocket upgrades.
+ *
+ * A `https://` host permission does NOT cover a `wss://` request, so websocket header
+ * modification genuinely needs this — but `wss` is not a documented host-permission
+ * scheme: Chrome accepts it at runtime while the Web Store rejects it in
+ * `host_permissions`. It therefore lives in `optional_host_permissions` and is asked
+ * for at runtime, and its absence downgrades websocket coverage instead of disabling
+ * the rule.
+ */
+export function patternToWebSocketOrigins(pattern: string): string[] {
+  return [`wss://${patternToHost(pattern)}/*`];
+}
+
+/** Flatten + de-duplicate the required (https) origins for a set of domain patterns. */
 export function patternsToOrigins(patterns: string[]): string[] {
   return [...new Set(patterns.flatMap(patternToOrigins))];
+}
+
+/** Flatten + de-duplicate the optional (wss) origins for a set of domain patterns. */
+export function patternsToWebSocketOrigins(patterns: string[]): string[] {
+  return [...new Set(patterns.flatMap(patternToWebSocketOrigins))];
 }

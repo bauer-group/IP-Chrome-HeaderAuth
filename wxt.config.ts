@@ -30,7 +30,13 @@ export default defineConfig({
     key: EXTENSION_KEY,
     permissions: ['storage', 'declarativeNetRequest', 'declarativeNetRequestFeedback'],
     // Canonical corporate domains work out of the box (no permission prompt).
-    host_permissions: ['https://*.app.bauer-group.com/*', 'wss://*.app.bauer-group.com/*'],
+    //
+    // https only: `wss` is not one of Chrome's four documented match-pattern schemes.
+    // It is accepted at runtime but REJECTED by Chrome Web Store review as a malformed
+    // host permission, which would kill the unlisted-CWS half of our two-channel
+    // rollout. WebSocket coverage therefore rides on optional_host_permissions below
+    // and is requested at runtime in the same prompt as the https origin.
+    host_permissions: ['https://*.app.bauer-group.com/*'],
     // User-added domains request access at runtime (narrower than <all_urls>).
     optional_host_permissions: ['https://*/*', 'wss://*/*'],
     action: {
