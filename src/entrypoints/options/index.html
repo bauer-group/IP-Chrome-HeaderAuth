@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Full tab, not the embedded chrome://extensions dialog. That dialog is a fixed
+      ~600x600 modal the page cannot grow out of, which forced the rules table into a
+      horizontal scrollbar and left every column unreadably narrow. WXT owns options_ui
+      and rebuilds it from this entrypoint, so the flag has to live here — setting it in
+      wxt.config.ts is silently overwritten at build time.
+    -->
+    <meta name="manifest.open_in_tab" content="true" />
     <title>Header Authenticator – Einstellungen</title>
   </head>
   <body>

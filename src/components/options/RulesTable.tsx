@@ -44,12 +44,13 @@ export function RulesTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{t('col.status')}</TableHead>
+          <TableHead className="w-[10rem]">{t('col.status')}</TableHead>
           <TableHead>{t('col.label')}</TableHead>
           <TableHead>{t('col.domains')}</TableHead>
-          <TableHead>{t('col.header')}</TableHead>
-          <TableHead>{t('col.secret')}</TableHead>
-          <TableHead className="text-right">{t('col.actions')}</TableHead>
+          <TableHead className="whitespace-nowrap">{t('col.header')}</TableHead>
+          {/* Secret is masked anyway — the first column to give up when space runs out. */}
+          <TableHead className="hidden lg:table-cell">{t('col.secret')}</TableHead>
+          <TableHead className="w-[10rem] text-right">{t('col.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -95,21 +96,28 @@ export function RulesTable({
                   )}
                 </div>
               </TableCell>
-              <TableCell className="max-w-[16rem]">
-                <span className="text-xs text-muted-foreground">
-                  {rule.domainPatterns.join(', ')}
-                </span>
-              </TableCell>
               <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {rule.domainPatterns.map((pattern) => (
+                    <span
+                      key={pattern}
+                      className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground"
+                    >
+                      {pattern}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
                 <span className="font-mono text-xs">{rule.headerName}</span>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden whitespace-nowrap lg:table-cell">
                 <span className="font-mono text-xs text-muted-foreground">
                   {maskSecret(rule.secretValue)}
                 </span>
               </TableCell>
               <TableCell>
-                <div className="flex items-center justify-end gap-1">
+                <div className="flex items-center justify-end gap-1 whitespace-nowrap">
                   {!isManaged && (
                     <>
                       <Switch

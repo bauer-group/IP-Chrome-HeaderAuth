@@ -87,79 +87,83 @@ function OptionsContent({ cfg }: { cfg: UseConfig }) {
   };
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6 p-6 text-foreground">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <img src="/icons/48.png" alt="" className="h-8 w-8" />
-          <div>
-            <h1 className="text-xl font-semibold">{t('options.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('options.subtitle')}</p>
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5 sm:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <img src="/icons/48.png" alt="" className="h-9 w-9 shrink-0" />
+            <div className="min-w-0">
+              <h1 className="truncate text-lg font-semibold sm:text-xl">{t('options.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('options.subtitle')}</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle
-            locale={config.uiLocale}
-            onChange={(l: Locale) => void update({ ...config, uiLocale: l })}
-          />
-          <ImportExport config={config} onImport={(c: Config) => void update(c)} />
+          <div className="flex shrink-0 items-center gap-2">
+            <LanguageToggle
+              locale={config.uiLocale}
+              onChange={(l: Locale) => void update({ ...config, uiLocale: l })}
+            />
+            <ImportExport config={config} onImport={(c: Config) => void update(c)} />
+          </div>
         </div>
       </header>
 
-      <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
-        <div>
-          <p className="text-sm font-medium">{t('options.master')}</p>
-          <p className="text-xs text-muted-foreground">{t('options.masterHint')}</p>
-        </div>
-        <Switch
-          checked={effective.masterEnabled}
-          disabled={masterManaged}
-          onCheckedChange={(v) => void update({ ...config, masterEnabled: v })}
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{t('options.rules')}</h2>
-        <Button onClick={() => setDialog({ rule: createBlankRule(), isNew: true })}>
-          <Plus className="h-4 w-4" />
-          {t('options.addRule')}
-        </Button>
-      </div>
-
-      {health?.error && (
-        <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
-          <AlertOctagon className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+      <main className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8 sm:px-8">
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-card p-5">
           <div className="min-w-0">
-            <p className="font-medium text-destructive">{t('health.failedTitle')}</p>
-            <p className="mt-0.5 break-words text-muted-foreground">
-              {t('health.failedBody', { error: health.error })}
-            </p>
+            <p className="text-sm font-medium">{t('options.master')}</p>
+            <p className="text-xs text-muted-foreground">{t('options.masterHint')}</p>
           </div>
-        </div>
-      )}
-
-      {hasManaged && (
-        <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-          <Building2 className="h-4 w-4 shrink-0" />
-          {t('managed.hint')}
-        </div>
-      )}
-
-      {isEmpty ? (
-        <EmptyState onAdd={() => setDialog({ rule: createBlankRule(), isNew: true })} />
-      ) : (
-        <div className="overflow-hidden rounded-lg border border-border">
-          <RulesTable
-            effective={effective}
-            granted={granted}
-            wssGranted={wssGranted}
-            appliedFor={(ruleId) => isRuleApplied(health, ruleId)}
-            onEdit={(rule) => setDialog({ rule, isNew: false })}
-            onDelete={(rule) => void deleteRule(rule)}
-            onToggle={toggleRule}
-            onGrant={(rule) => void grantRule(rule)}
+          <Switch
+            checked={effective.masterEnabled}
+            disabled={masterManaged}
+            onCheckedChange={(v) => void update({ ...config, masterEnabled: v })}
           />
         </div>
-      )}
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">{t('options.rules')}</h2>
+          <Button onClick={() => setDialog({ rule: createBlankRule(), isNew: true })}>
+            <Plus className="h-4 w-4" />
+            {t('options.addRule')}
+          </Button>
+        </div>
+
+        {health?.error && (
+          <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+            <AlertOctagon className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+            <div className="min-w-0">
+              <p className="font-medium text-destructive">{t('health.failedTitle')}</p>
+              <p className="mt-0.5 break-words text-muted-foreground">
+                {t('health.failedBody', { error: health.error })}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {hasManaged && (
+          <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
+            <Building2 className="h-4 w-4 shrink-0" />
+            {t('managed.hint')}
+          </div>
+        )}
+
+        {isEmpty ? (
+          <EmptyState onAdd={() => setDialog({ rule: createBlankRule(), isNew: true })} />
+        ) : (
+          <div className="overflow-hidden rounded-lg border border-border">
+            <RulesTable
+              effective={effective}
+              granted={granted}
+              wssGranted={wssGranted}
+              appliedFor={(ruleId) => isRuleApplied(health, ruleId)}
+              onEdit={(rule) => setDialog({ rule, isNew: false })}
+              onDelete={(rule) => void deleteRule(rule)}
+              onToggle={toggleRule}
+              onGrant={(rule) => void grantRule(rule)}
+            />
+          </div>
+        )}
+      </main>
 
       {dialog && (
         <RuleDialog
