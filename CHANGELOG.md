@@ -1,3 +1,9 @@
+## [2.2.1](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.0...v2.2.1) (2026-08-18)
+
+### 🐛 Bug Fixes
+
+* **release:** stamped update_url into the self-hosted crx manifest ([bd0fafe](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/bd0fafeb8cefe9486108fda2d76bf7f5c0d55567))
+
 ## [2.2.0](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.2...v2.2.0) (2026-08-18)
 
 ### 🚀 Features
