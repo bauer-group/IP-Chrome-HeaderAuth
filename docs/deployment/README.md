@@ -18,6 +18,31 @@ the same policy keys.
 > dead. If the repository ever returns to private, host the two files on internal
 > HTTPS / MinIO and repoint `update_url` there.
 
+### Why the release-asset URL, and when to reconsider
+
+That URL is not a direct download. It answers `302` to
+`.../releases/download/<tag>/updates.xml`, which redirects again to
+`release-assets.githubusercontent.com` with a **signed URL valid for about an
+hour**, served as `application/octet-stream`. Chrome's updater follows the chain
+without complaint — this is verified working, not assumed.
+
+The alternative is GitHub Pages: one origin, one hop, no signature, and a
+correct `Content-Type`. It was evaluated and **deliberately not built**, because
+on an open network it buys no correctness — only a second publication path that
+can drift from the release it is supposed to mirror.
+
+**Reconsider if managed clients ever sit behind an egress allowlist or a
+TLS-inspecting proxy.** The second hop leaves `github.com` for a different host,
+so an allowlist that permits `github.com` but not `*.githubusercontent.com`
+breaks the update check while everything still looks healthy from the repo side.
+
+If that day comes, the constraint on the fix is that Pages must publish from the
+**same job and the same artifacts** as the release assets — never as an
+independent workflow, or `updates.xml` will eventually advertise a version whose
+`.crx` is not there yet. Note also that `scripts/sign-crx.mjs` writes the
+`codebase` URL _into the CRX_, so a channel switch only takes effect from the
+next release onward; it is not retroactive.
+
 ## 1. Force-install (the extension itself)
 
 Use **one** channel per machine — set `update_url` to either the self-hosted
