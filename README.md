@@ -96,8 +96,18 @@ which ones are inherited from the organization instead.
 - **Secrets in sync** are stored unencrypted in the browser account cloud (the
   cross-device-sync trade-off). For governed secrets, push them via managed policy,
   or disable "Sync secret across devices" on a rule to keep it device-local.
-- **WSS is best-effort.** Header modification on WebSocket upgrades initiated from a
-  service worker is unreliable (Chromium limitation); page-initiated WebSockets work.
+- **WSS is best-effort and opt-in.** `wss` is not one of Chrome's four documented
+  match-pattern schemes: it works at runtime but Web Store review rejects it in
+  `host_permissions`, so it sits in `optional_host_permissions` and is asked for at
+  runtime — in the same prompt as the `https` origin, so one click covers both. Without
+  that grant, HTTP requests still carry the header and only WebSocket upgrades go bare;
+  the rules table shows a click-to-grant chip when that is the case. Header
+  modification on upgrades initiated from a service worker is unreliable on top of that
+  (Chromium limitation); page-initiated WebSockets work.
+- **The rule status reflects the engine, not the config.** A rule reads as active only
+  once the background has confirmed it is installed in the declarativeNetRequest
+  engine. A failed `updateDynamicRules` shows its error on the settings page instead of
+  disappearing into an unhandled rejection.
 
 ## License
 
