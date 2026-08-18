@@ -28,7 +28,14 @@ export default defineConfig({
     description: '__MSG_extDescription__',
     default_locale: 'en',
     key: EXTENSION_KEY,
-    permissions: ['storage', 'declarativeNetRequest', 'declarativeNetRequestFeedback'],
+    // Least privilege. `declarativeNetRequestWithHostAccess` is the same API, scoped to
+    // hosts we already hold permission for — which is exactly what this extension does,
+    // and it carries NO install warning. Plain `declarativeNetRequest` warns "Block
+    // content on any page", and `declarativeNetRequestFeedback` (DevTools rule logging,
+    // never called anywhere in this codebase) warns "Read your browsing history" — a
+    // poor thing to ask of users for an extension that manages auth secrets. Apply
+    // failures now surface in the UI via dnr/health.ts instead.
+    permissions: ['storage', 'declarativeNetRequestWithHostAccess'],
     // Canonical corporate domains work out of the box (no permission prompt).
     //
     // https only: `wss` is not one of Chrome's four documented match-pattern schemes.

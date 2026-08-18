@@ -91,6 +91,21 @@ which ones are inherited from the organization instead.
 
 ## Security notes
 
+- **Least privilege by construction.** The only API permissions are `storage` and
+  `declarativeNetRequestWithHostAccess` — the host-scoped variant, which carries no
+  install warning at all. Plain `declarativeNetRequest` would warn "Block content on
+  any page" and `declarativeNetRequestFeedback` "Read your browsing history"; neither
+  buys anything here. There is no content script and no blocking `webRequest`
+  listener, so no extension code runs on any page or in any request path.
+- **Any site can trigger a header-carrying request to a protected origin.** DNR matches
+  the request URL, not who initiated it, so a third-party page embedding
+  `<img src="https://app.bauer-group.com/…">` gets the header attached. The secret
+  itself stays unreadable to that page — the browser adds it below JavaScript's reach,
+  and cross-origin reads still need CORS — but the request does pass the perimeter
+  gate, leaving the app's own authentication as the control that matters. This has been
+  true since v1. Constraining it means splitting the rule and adding `initiatorDomains`
+  to the subresource half, which also cuts off legitimate cross-origin `fetch` from
+  other company origins; that trade-off has not been taken.
 - **Shipped code has 0 known vulnerabilities.** The dev-only audit findings trace to
   `wxt → web-ext-run` (the Firefox dev runner) and never ship.
 - **Secrets in sync** are stored unencrypted in the browser account cloud (the
