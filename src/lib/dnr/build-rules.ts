@@ -17,12 +17,33 @@ export interface ModifyHeaderRule {
   };
 }
 
-/** Resource types the auth header should be attached to (incl. websocket — best-effort). */
+/**
+ * Chrome's complete `declarativeNetRequest.ResourceType` enum — the auth header goes
+ * on EVERY request to a matched domain, mirroring v1's `Object.values(ResourceType)`.
+ *
+ * Listing a subset is not a safe optimisation: a reverse proxy that enforces the header
+ * rejects whatever it does not see, so an SPA whose document loads but whose `script` /
+ * `stylesheet` / `font` requests arrive bare simply never boots. `resourceTypes` must be
+ * explicit because Chrome's default (property omitted) excludes `main_frame`.
+ *
+ * Scope is bounded by `condition.requestDomains`, so the secret still only ever leaves
+ * the browser towards the rule's own domains.
+ */
 export const DNR_RESOURCE_TYPES = [
   'main_frame',
   'sub_frame',
+  'stylesheet',
+  'script',
+  'image',
+  'font',
+  'object',
   'xmlhttprequest',
+  'ping',
+  'csp_report',
+  'media',
   'websocket',
+  'webtransport',
+  'webbundle',
   'other',
 ] as const;
 

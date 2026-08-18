@@ -21,3 +21,34 @@ describe('buildRule', () => {
     expect(rule.condition.resourceTypes).toEqual([...DNR_RESOURCE_TYPES]);
   });
 });
+
+describe('DNR_RESOURCE_TYPES', () => {
+  /**
+   * Regression guard for the v1 → v2 regression: v1 attached the header to
+   * `Object.values(chrome.declarativeNetRequest.ResourceType)`, v2 shipped a
+   * hand-picked subset — so SPA subresources (script/stylesheet/image/font)
+   * reached header-protected origins WITHOUT the auth header and were rejected.
+   * This list is Chrome's full ResourceType enum and must stay complete.
+   */
+  const CHROME_RESOURCE_TYPES = [
+    'main_frame',
+    'sub_frame',
+    'stylesheet',
+    'script',
+    'image',
+    'font',
+    'object',
+    'xmlhttprequest',
+    'ping',
+    'csp_report',
+    'media',
+    'websocket',
+    'webtransport',
+    'webbundle',
+    'other',
+  ];
+
+  it('covers every Chrome resource type', () => {
+    expect([...DNR_RESOURCE_TYPES].sort()).toEqual([...CHROME_RESOURCE_TYPES].sort());
+  });
+});
