@@ -141,7 +141,58 @@ ways out, and they compose:
 Option 1 is the one to reach for on a fleet — no reinstall window, and it stays
 correct afterwards.
 
-## 4. Verify on a test machine
+## 4. Uninstall / decommission
+
+Removing the ID from `ExtensionInstallForcelist` is normally all it takes — Chrome
+uninstalls a previously force-installed extension once it leaves that list.
+
+| Platform | Normal removal                                   | Escalation (survives a restart)                                              |
+| -------- | ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Windows  | [`uninstall-windows.reg`](uninstall-windows.reg) | [`uninstall-force-windows.reg`](uninstall-force-windows.reg)                 |
+| macOS    | remove the install profile in your MDM           | [`macos-chrome-uninstall.mobileconfig`](macos-chrome-uninstall.mobileconfig) |
+
+Apply, **restart the browser**, then confirm on the extensions page.
+
+### If it is still there after the restart
+
+The auto-uninstall is documented behaviour with known failures, macOS most of all.
+The escalation sets `installation_mode: "removed"`, which is defined as _"blocks
+installation of the extension and removes it from the device if already
+installed"_ — it uninstalls, where `blocked` would only bar future installs.
+
+**The escalation leaves a block behind, and you must lift it.** While it is in
+place the ID is barred from the device, so a later re-deployment installs nothing
+and fails silently — indistinguishable from a dead update channel. Full sequence:
+
+1. Apply the escalation
+2. Restart, confirm removal
+3. Apply the _normal_ removal file (Windows) or remove the escalation profile
+   (macOS) to lift the block
+
+### Two policy values are shared — read before applying
+
+- **`ExtensionInstallForcelist`** is a numbered list. The files here delete value
+  `"1"`, the slot [`force-install-windows.reg`](force-install-windows.reg) writes. If
+  the fleet force-installs anything else, check the numbering first and delete only
+  the slot holding this ID.
+- **`ExtensionSettings`** is a _single_ `REG_SZ` holding JSON for **every** managed
+  extension. The removal file deletes the whole value. If other extensions are
+  configured there, edit the JSON by hand and drop only the
+  `jncjhkagdjiiohjfmbpmlemdchbkjaib` object instead.
+
+```bash
+reg query "HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist"
+reg query "HKLM\SOFTWARE\Policies\Google\Chrome" /v ExtensionSettings
+```
+
+### Uninstalling does not revoke access
+
+Device-local secrets go with the extension, but a synced secret lives in the user's
+browser account and may also sit in any config export the user made. **Decommissioning
+a protected service means rotating the secret server-side.** Treat uninstall as
+removing an access path, never as revoking access.
+
+## 5. Verify on a test machine
 
 1. Apply the force-install policy, restart the browser.
 2. `chrome://extensions` shows the extension installed and **managed** (not removable).

@@ -1,0 +1,49 @@
+Windows Registry Editor Version 5.00
+
+; BAUER GROUP Header Authenticator - FORCED removal (Windows). Escalation only.
+;
+; Use this when uninstall-windows.reg left the extension installed after a browser
+; restart. installation_mode "removed" is documented as "blocks installation of the
+; extension and removes it from the device if already installed" - it uninstalls
+; rather than merely disabling, which "blocked" does not do.
+;
+; ---------------------------------------------------------------------------
+; THIS LEAVES A BLOCK BEHIND. While these values are set, the ID is barred from
+; the device: a later re-deployment installs nothing and fails silently, looking
+; exactly like a broken update channel.
+;
+; Procedure:
+;   1. Apply this file
+;   2. Restart the browser, confirm removal on chrome://extensions
+;   3. Apply uninstall-windows.reg to lift the block
+;
+; Step 3 is not optional unless you intend to bar this extension permanently.
+; ---------------------------------------------------------------------------
+;
+; ExtensionSettings is ONE REG_SZ shared by every managed extension. If your fleet
+; configures others there, do NOT apply this file - merge the
+; "jncjhkagdjiiohjfmbpmlemdchbkjaib" object into the existing JSON by hand:
+;   reg query "HKLM\SOFTWARE\Policies\Google\Chrome" /v ExtensionSettings
+
+; --- Google Chrome ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"removed\",\"blocked_install_message\":\"Removed by BAUER GROUP IT.\"}}"
+
+; --- Brave ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"removed\",\"blocked_install_message\":\"Removed by BAUER GROUP IT.\"}}"
+
+; --- Microsoft Edge ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"removed\",\"blocked_install_message\":\"Removed by BAUER GROUP IT.\"}}"
+
+; The forcelist entry must go too, or the two policies fight each other on every
+; policy refresh - force_installed on one side, removed on the other.
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist]
+"1"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallForcelist]
+"1"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist]
+"1"=-

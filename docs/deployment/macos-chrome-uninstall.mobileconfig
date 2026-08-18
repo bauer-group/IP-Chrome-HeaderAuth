@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  BAUER GROUP Header Authenticator - macOS FORCED removal (Google Chrome).
+  Escalation only. Duplicate the inner payload with PayloadType
+  com.brave.Browser / com.microsoft.Edge for Brave / Edge.
+
+  The normal way to remove the extension on macOS is to REMOVE the install
+  profile (macos-chrome-forcelist.mobileconfig) from the device in your MDM.
+  Chrome uninstalls a previously force-installed extension once it leaves
+  ExtensionInstallForcelist. Do that first.
+
+  Deploy THIS profile only if the extension survives a browser restart after
+  the install profile is gone -- the auto-uninstall is documented behaviour
+  but has known failures, macOS most of all. installation_mode "removed"
+  uninstalls rather than merely disabling.
+
+  THIS PROFILE LEAVES A BLOCK BEHIND. While it is installed the extension ID
+  is barred from the device, and a later re-deployment installs nothing and
+  fails silently. REMOVE THIS PROFILE once chrome://extensions confirms the
+  extension is gone -- it is a removal tool, not a steady state.
+-->
+<plist version="1.0">
+  <dict>
+    <key>PayloadContent</key>
+    <array>
+      <dict>
+        <key>PayloadType</key>
+        <string>com.google.Chrome</string>
+        <key>PayloadIdentifier</key>
+        <string>com.bauer-group.headerauth.chrome.uninstall</string>
+        <key>PayloadUUID</key>
+        <string>1A2B3C4D-0002-0000-0000-000000000001</string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+        <key>PayloadEnabled</key>
+        <true/>
+        <key>ExtensionSettings</key>
+        <dict>
+          <key>jncjhkagdjiiohjfmbpmlemdchbkjaib</key>
+          <dict>
+            <key>installation_mode</key>
+            <string>removed</string>
+            <key>blocked_install_message</key>
+            <string>Removed by BAUER GROUP IT.</string>
+          </dict>
+        </dict>
+      </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>BAUER GROUP Header Authenticator - Forced Removal (Chrome)</string>
+    <key>PayloadIdentifier</key>
+    <string>com.bauer-group.headerauth.uninstall</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>1A2B3C4D-0002-0000-0000-000000000000</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+  </dict>
+</plist>

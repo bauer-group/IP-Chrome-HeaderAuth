@@ -1,0 +1,69 @@
+Windows Registry Editor Version 5.00
+
+; BAUER GROUP Header Authenticator - remove the enterprise policy (Windows).
+;
+; Removing the ID from ExtensionInstallForcelist is enough on its own: Chrome
+; uninstalls a previously force-installed extension when it leaves that list.
+; Apply, then RESTART the browser and confirm on chrome://extensions.
+;
+; If it survives the restart (a known Chromium bug, most often on macOS), escalate
+; with uninstall-force-windows.reg and then re-apply THIS file to lift the block it
+; leaves behind.
+;
+; This file is also step 2 of the escalation path, which is why it clears
+; ExtensionSettings rather than only the forcelist entry.
+;
+; ---------------------------------------------------------------------------
+; READ BEFORE APPLYING - two values here are SHARED with other extensions:
+;
+;   ExtensionInstallForcelist is a numbered list. This file deletes value "1",
+;   which is the slot force-install-windows.reg writes. If your fleet force-installs
+;   anything else, check the numbering first (reg query, see below) and delete only
+;   the slot holding jncjhkagdjiiohjfmbpmlemdchbkjaib.
+;
+;   ExtensionSettings is ONE REG_SZ holding JSON for EVERY managed extension. This
+;   file deletes the whole value. If other extensions are configured there, do NOT
+;   apply that part - edit the JSON and drop only the
+;   "jncjhkagdjiiohjfmbpmlemdchbkjaib" object instead.
+;
+; Inspect first:
+;   reg query "HKLM\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist"
+;   reg query "HKLM\SOFTWARE\Policies\Google\Chrome" /v ExtensionSettings
+; ---------------------------------------------------------------------------
+
+; --- Google Chrome ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist]
+"1"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]
+"ExtensionSettings"=-
+
+; Managed configuration (domains + secrets pushed by policy). Keyed by extension
+; ID, so deleting the whole subtree touches nothing else.
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\jncjhkagdjiiohjfmbpmlemdchbkjaib]
+
+; --- Brave ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave\ExtensionInstallForcelist]
+"1"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave]
+"ExtensionSettings"=-
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave\3rdparty\extensions\jncjhkagdjiiohjfmbpmlemdchbkjaib]
+
+; --- Microsoft Edge ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist]
+"1"=-
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge]
+"ExtensionSettings"=-
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\3rdparty\extensions\jncjhkagdjiiohjfmbpmlemdchbkjaib]
+
+; ---------------------------------------------------------------------------
+; The secret is NOT revoked by uninstalling. Device-local secrets go with the
+; extension, but anything synced lives in the user's browser account, and a copy
+; may sit in any export the user made. Decommissioning a protected service means
+; ROTATING THE SECRET on the server. Treat this file as removing an access path,
+; never as revoking access.
+; ---------------------------------------------------------------------------
