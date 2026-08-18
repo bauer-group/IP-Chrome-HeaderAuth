@@ -1,3 +1,14 @@
+## [2.2.0](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.2...v2.2.0) (2026-08-18)
+
+### 🚀 Features
+
+* **options:** opened the settings page in a full tab ([f8053ab](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/f8053ab2dacebc2c5c627bcf324dea7cb0672a46))
+
+### 🐛 Bug Fixes
+
+* **dnr:** surfaced rule-application failures instead of swallowing them ([f1a11f4](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/f1a11f45468ad9c9780743c5de6a912a1898e5e4))
+* **permissions:** moved the wss scheme out of host_permissions ([d2452fc](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/d2452fc84772151170cdc083c09b43e30d0f034c))
+
 ## [2.1.2](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.1...v2.1.2) (2026-08-18)
 
 ### 🐛 Bug Fixes
