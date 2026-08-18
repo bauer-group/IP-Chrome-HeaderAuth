@@ -49,6 +49,8 @@ export const DNR_RESOURCE_TYPES = [
 
 export interface RuleInput {
   ruleId: number;
+  /** Internal `Rule.id` this input came from — carried so health can report per rule. */
+  sourceId: string;
   headerName: string;
   secretValue: string;
   /** Bare registrable domains for `condition.requestDomains` (scheme-agnostic, matches subdomains). */

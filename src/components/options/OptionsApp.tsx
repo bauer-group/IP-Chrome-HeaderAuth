@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, Plus } from 'lucide-react';
+import { AlertOctagon, Building2, Plus } from 'lucide-react';
 import { I18nProvider, useI18n, type Locale } from '../../lib/i18n';
 import { TooltipProvider } from '../ui/tooltip';
 import { Toaster, toast } from '../ui/sonner';
@@ -12,6 +12,8 @@ import { LanguageToggle } from './LanguageToggle';
 import { ImportExport } from './ImportExport';
 import { useConfig, type UseConfig } from '../../lib/hooks/useConfig';
 import { useGrants } from '../../lib/hooks/useGrants';
+import { useDnrHealth } from '../../lib/hooks/useDnrHealth';
+import { isRuleApplied } from '../../lib/dnr/health';
 import {
   createBlankRule,
   type Config,
@@ -40,7 +42,8 @@ interface DialogState {
 function OptionsContent({ cfg }: { cfg: UseConfig }) {
   const { t } = useI18n();
   const { config, managed, effective, update } = cfg;
-  const { granted, refresh } = useGrants(effective.rules);
+  const { granted, wssGranted, refresh } = useGrants(effective.rules);
+  const health = useDnrHealth();
   const [dialog, setDialog] = useState<DialogState | null>(null);
 
   const masterManaged = managed?.masterEnabled !== undefined;
@@ -122,6 +125,18 @@ function OptionsContent({ cfg }: { cfg: UseConfig }) {
         </Button>
       </div>
 
+      {health?.error && (
+        <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+          <AlertOctagon className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+          <div className="min-w-0">
+            <p className="font-medium text-destructive">{t('health.failedTitle')}</p>
+            <p className="mt-0.5 break-words text-muted-foreground">
+              {t('health.failedBody', { error: health.error })}
+            </p>
+          </div>
+        </div>
+      )}
+
       {hasManaged && (
         <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
           <Building2 className="h-4 w-4 shrink-0" />
@@ -136,6 +151,8 @@ function OptionsContent({ cfg }: { cfg: UseConfig }) {
           <RulesTable
             effective={effective}
             granted={granted}
+            wssGranted={wssGranted}
+            appliedFor={(ruleId) => isRuleApplied(health, ruleId)}
             onEdit={(rule) => setDialog({ rule, isNew: false })}
             onDelete={(rule) => void deleteRule(rule)}
             onToggle={toggleRule}

@@ -1,4 +1,4 @@
-import { Building2, Pencil, Trash2 } from 'lucide-react';
+import { Building2, Pencil, PlugZap, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
@@ -21,6 +21,8 @@ import type { EffectiveConfig, EffectiveRule } from '../../lib/schema/config';
 export function RulesTable({
   effective,
   granted,
+  wssGranted,
+  appliedFor,
   onEdit,
   onDelete,
   onToggle,
@@ -28,6 +30,9 @@ export function RulesTable({
 }: {
   effective: EffectiveConfig;
   granted: Set<string>;
+  wssGranted: Set<string>;
+  /** What the DNR engine reports for a rule. `null` = not reported yet. */
+  appliedFor: (ruleId: string) => boolean | null;
   onEdit: (rule: EffectiveRule) => void;
   onDelete: (rule: EffectiveRule) => void;
   onToggle: (rule: EffectiveRule, enabled: boolean) => void;
@@ -54,13 +59,30 @@ export function RulesTable({
           return (
             <TableRow key={rule.id}>
               <TableCell>
-                {rule.enabled && !isGranted ? (
-                  <Button variant="secondary" size="sm" onClick={() => onGrant(rule)}>
-                    {t('popup.grant')}
-                  </Button>
-                ) : (
-                  <RuleStatusBadge rule={rule} granted={isGranted} />
-                )}
+                <div className="flex flex-col items-start gap-1.5">
+                  {rule.enabled && !isGranted ? (
+                    <Button variant="secondary" size="sm" onClick={() => onGrant(rule)}>
+                      {t('popup.grant')}
+                    </Button>
+                  ) : (
+                    <RuleStatusBadge
+                      rule={rule}
+                      granted={isGranted}
+                      applied={appliedFor(rule.id)}
+                    />
+                  )}
+                  {rule.enabled && isGranted && !wssGranted.has(rule.id) && (
+                    <button
+                      type="button"
+                      onClick={() => onGrant(rule)}
+                      title={t('popup.wssHint')}
+                      className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <PlugZap className="h-3 w-3" />
+                      {t('popup.wssBestEffort')}
+                    </button>
+                  )}
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1.5">

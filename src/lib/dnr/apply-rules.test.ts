@@ -9,6 +9,7 @@ import { buildRule } from './build-rules';
 function makeRule(ruleId: number) {
   return buildRule({
     ruleId,
+    sourceId: `r${ruleId}`,
     headerName: 'X-BAUERGROUP-Auth',
     secretValue: '11111111-1111-1111-1111-111111111111',
     domains: ['app.bauer-group.com'],

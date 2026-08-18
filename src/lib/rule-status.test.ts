@@ -31,6 +31,29 @@ describe('ruleStatus', () => {
     expect(ruleStatus(rule, false)).toEqual({ key: 'disabled', managed: false });
   });
 
+  it('reports inactive when access is granted but the engine holds no rule', () => {
+    expect(ruleStatus(makeRule(), true, false)).toEqual({ key: 'inactive', managed: false });
+  });
+
+  it('reports active when the engine confirms the rule', () => {
+    expect(ruleStatus(makeRule(), true, true)).toEqual({ key: 'active', managed: false });
+  });
+
+  it('does not downgrade while the engine has not reported yet', () => {
+    expect(ruleStatus(makeRule(), true, null)).toEqual({ key: 'active', managed: false });
+  });
+
+  it('keeps needs-access ahead of the engine verdict', () => {
+    expect(ruleStatus(makeRule(), false, false)).toEqual({ key: 'needs-access', managed: false });
+  });
+
+  it('keeps disabled ahead of everything', () => {
+    expect(ruleStatus(makeRule({ enabled: false }), true, false)).toEqual({
+      key: 'disabled',
+      managed: false,
+    });
+  });
+
   it('flags managed rules through every status', () => {
     expect(ruleStatus(makeRule({ source: 'managed' }), true).managed).toBe(true);
     expect(ruleStatus(makeRule({ source: 'managed' }), false).managed).toBe(true);

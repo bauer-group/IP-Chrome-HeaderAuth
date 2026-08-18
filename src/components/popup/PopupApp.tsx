@@ -1,5 +1,5 @@
 import { browser } from 'wxt/browser';
-import { ExternalLink, Building2 } from 'lucide-react';
+import { AlertOctagon, ExternalLink, Building2 } from 'lucide-react';
 import { I18nProvider, useI18n } from '../../lib/i18n';
 import { TooltipProvider } from '../ui/tooltip';
 import { Button } from '../ui/button';
@@ -8,6 +8,8 @@ import { Badge } from '../ui/badge';
 import { RuleStatusBadge } from '../RuleStatusBadge';
 import { useConfig, type UseConfig } from '../../lib/hooks/useConfig';
 import { useGrants } from '../../lib/hooks/useGrants';
+import { useDnrHealth } from '../../lib/hooks/useDnrHealth';
+import { isRuleApplied } from '../../lib/dnr/health';
 import { requestOriginsForPatterns } from '../../lib/permissions';
 import type { EffectiveRule } from '../../lib/schema/config';
 
@@ -26,8 +28,11 @@ function PopupContent({ cfg }: { cfg: UseConfig }) {
   const { t } = useI18n();
   const { effective, config, managed, update } = cfg;
   const { granted, refresh } = useGrants(effective.rules);
+  const health = useDnrHealth();
 
-  const activeCount = effective.rules.filter((r) => r.enabled && granted.has(r.id)).length;
+  const activeCount = effective.rules.filter(
+    (r) => r.enabled && granted.has(r.id) && isRuleApplied(health, r.id) !== false,
+  ).length;
   const masterManaged = managed?.masterEnabled !== undefined;
 
   return (
@@ -41,6 +46,15 @@ function PopupContent({ cfg }: { cfg: UseConfig }) {
           {t('popup.activeCount', { count: activeCount })}
         </Badge>
       </header>
+
+      {health?.error && (
+        <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2.5 text-xs">
+          <AlertOctagon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />
+          <span className="min-w-0 break-words font-medium text-destructive">
+            {t('health.failedTitle')}
+          </span>
+        </div>
+      )}
 
       <div className="flex items-center justify-between rounded-md border border-border bg-card p-3">
         <span className="text-sm font-medium">{t('popup.master')}</span>
@@ -63,6 +77,7 @@ function PopupContent({ cfg }: { cfg: UseConfig }) {
               key={rule.id}
               rule={rule}
               granted={granted.has(rule.id)}
+              applied={isRuleApplied(health, rule.id)}
               onGranted={refresh}
             />
           ))
@@ -80,10 +95,12 @@ function PopupContent({ cfg }: { cfg: UseConfig }) {
 function PopupRow({
   rule,
   granted,
+  applied,
   onGranted,
 }: {
   rule: EffectiveRule;
   granted: boolean;
+  applied: boolean | null;
   onGranted: () => void;
 }) {
   const { t } = useI18n();
@@ -112,7 +129,7 @@ function PopupRow({
           {t('popup.grant')}
         </Button>
       ) : (
-        <RuleStatusBadge rule={rule} granted={granted} />
+        <RuleStatusBadge rule={rule} granted={granted} applied={applied} />
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { browser } from 'wxt/browser';
 import { type Config, parseConfig } from '../schema/config';
+import { HEALTH_KEY } from '../dnr/health';
 import { planWrite, readConfig } from './shard';
 
 const LOCAL_SECRET_PREFIX = 'secret:';
@@ -49,10 +50,19 @@ export async function saveConfig(config: Config): Promise<void> {
   if (localRemove.length) await browser.storage.local.remove(localRemove);
 }
 
-/** Subscribe to any change in user (sync/local) or managed (policy) storage. */
+/**
+ * Subscribe to any change in user (sync/local) or managed (policy) storage.
+ *
+ * Changes that touch ONLY the DNR health record are ignored: that record is written by
+ * the rule refresh this callback triggers, so reacting to it would spin the service
+ * worker in a write → notify → write loop forever.
+ */
 export function onConfigChanged(callback: () => void): () => void {
-  const listener = (_changes: unknown, areaName: string) => {
-    if (areaName === 'sync' || areaName === 'local' || areaName === 'managed') callback();
+  const listener = (changes: Record<string, unknown> | undefined, areaName: string) => {
+    if (areaName !== 'sync' && areaName !== 'local' && areaName !== 'managed') return;
+    const keys = Object.keys(changes ?? {});
+    if (keys.length > 0 && keys.every((key) => key === HEALTH_KEY)) return;
+    callback();
   };
   browser.storage.onChanged.addListener(listener);
   return () => browser.storage.onChanged.removeListener(listener);

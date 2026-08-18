@@ -14,11 +14,24 @@ const en = {
   'popup.statusActive': 'Active',
   'popup.statusNeedsAccess': 'Needs access',
   'popup.statusDisabled': 'Disabled',
+  'popup.statusInactive': 'Not applied',
   'popup.statusManaged': 'Managed',
-  'popup.wssBestEffort': 'WSS best-effort',
+  'popup.wssBestEffort': 'No WebSocket access',
+  'popup.wssHint':
+    'HTTP requests carry the header. WebSocket upgrades (wss://) need a separate grant — click to allow.',
+  'status.inactiveHint':
+    'The browser is not enforcing this rule. Open the settings page for the reason.',
   'popup.grant': 'Grant access',
   'popup.noRules': 'No rules yet.',
   'popup.openSettings': 'Open settings',
+
+  // Engine health
+  'health.failedTitle': 'Rules could not be applied',
+  'health.failedBody':
+    'The browser rejected the last rule update, so no header is being injected right now: {error}',
+  'health.inactiveTitle': 'Rule is not being enforced',
+  'health.inactiveBody':
+    'Access is granted, but the browser holds no rule for it. A secret that is still all-zero or a rule without domains is skipped.',
 
   // Options shell
   'options.title': 'BAUER GROUP Header Authenticator',
@@ -108,11 +121,23 @@ const de = {
   'popup.statusActive': 'Aktiv',
   'popup.statusNeedsAccess': 'Zugriff nötig',
   'popup.statusDisabled': 'Deaktiviert',
+  'popup.statusInactive': 'Nicht angewandt',
   'popup.statusManaged': 'Verwaltet',
-  'popup.wssBestEffort': 'WSS best-effort',
+  'popup.wssBestEffort': 'No WebSocket access',
+  'popup.wssHint':
+    'HTTP requests carry the header. WebSocket upgrades (wss://) need a separate grant — click to allow.',
+  'status.inactiveHint':
+    'The browser is not enforcing this rule. Open the settings page for the reason.',
   'popup.grant': 'Zugriff erteilen',
   'popup.noRules': 'Noch keine Regeln.',
   'popup.openSettings': 'Einstellungen öffnen',
+
+  'health.failedTitle': 'Regeln konnten nicht angewendet werden',
+  'health.failedBody':
+    'Der Browser hat die letzte Regelaktualisierung abgelehnt — es wird derzeit kein Header injiziert: {error}',
+  'health.inactiveTitle': 'Regel wird nicht angewendet',
+  'health.inactiveBody':
+    'Der Zugriff ist erteilt, aber der Browser hält keine Regel dafür vor. Ein noch komplett auf Null stehendes Secret oder eine Regel ohne Domains wird übersprungen.',
 
   'options.title': 'BAUER GROUP Header Authenticator',
   'options.subtitle': 'Geschützte Domains und ihre Authentifizierungs-Secrets verwalten.',

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { loadConfig, saveConfig, onConfigChanged } from './index';
+import { HEALTH_KEY } from '../dnr/health';
 import type { Config, Rule } from '../schema/config';
 
 const SECRET = '11111111-1111-1111-1111-111111111111';
@@ -113,6 +114,35 @@ describe('onConfigChanged', () => {
     });
 
     await fakeBrowser.storage.local.set({ 'secret:r1': SECRET });
+    expect(calls).toBeGreaterThan(0);
+    unsubscribe();
+  });
+
+  it('ignores a change that only touches the DNR health record', async () => {
+    // The health record is written BY the refresh this callback triggers. Reacting
+    // to it would spin the service worker in a write -> notify -> write loop.
+    let calls = 0;
+    const unsubscribe = onConfigChanged(() => {
+      calls += 1;
+    });
+
+    await fakeBrowser.storage.local.set({
+      [HEALTH_KEY]: { appliedRuleIds: [], error: null, at: 1 },
+    });
+    expect(calls).toBe(0);
+    unsubscribe();
+  });
+
+  it('still fires when a real key changes alongside the health record', async () => {
+    let calls = 0;
+    const unsubscribe = onConfigChanged(() => {
+      calls += 1;
+    });
+
+    await fakeBrowser.storage.local.set({
+      [HEALTH_KEY]: { appliedRuleIds: [], error: null, at: 2 },
+      'secret:r1': SECRET,
+    });
     expect(calls).toBeGreaterThan(0);
     unsubscribe();
   });

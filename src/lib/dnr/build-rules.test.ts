@@ -5,6 +5,7 @@ describe('buildRule', () => {
   it('builds a modifyHeaders/set rule with the expected shape', () => {
     const rule = buildRule({
       ruleId: 7,
+      sourceId: 'r1',
       headerName: 'X-BAUERGROUP-Auth',
       secretValue: '11111111-1111-1111-1111-111111111111',
       domains: ['app.bauer-group.com'],

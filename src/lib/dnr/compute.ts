@@ -29,6 +29,7 @@ export function computeRuleInputs(
 
     inputs.push({
       ruleId: nextId++,
+      sourceId: rule.id,
       headerName: rule.headerName,
       secretValue: rule.secretValue,
       domains,
