@@ -115,7 +115,33 @@ an example payload is in [`managed-config.example.json`](managed-config.example.
 Effective configuration = **managed rules (read-only) ∪ user rules**. A managed
 `masterEnabled` overrides the in-app master switch.
 
-## 3. Verify on a test machine
+## 3. When does a managed client actually update?
+
+Chrome checks installed extensions for updates **on startup and every few hours**
+(roughly five). There is no policy to shorten that interval. To trigger a check
+immediately: extensions page → enable **Developer mode** → **Update extensions
+now**. That covers force-installed extensions too.
+
+### Clients stuck on a pre-2.2.1 version
+
+Releases before v2.2.1 shipped a `.crx` with no `update_url` in its manifest, so
+those installs never ask for an update at all — waiting will not fix them. Two
+ways out, and they compose:
+
+1. **Policy (works without touching the client).** Set `ExtensionSettings` with
+   `"override_update_url": true`, which makes the browser install **and update**
+   from the policy URL regardless of the installed manifest. Ready-to-apply
+   values for Chrome, Brave and Edge are in
+   [`force-install-windows.reg`](force-install-windows.reg). Apply, restart the
+   browser, then **Update extensions now**.
+2. **Reinstall.** Remove the ID from `ExtensionInstallForcelist`, restart, put it
+   back. The fresh install carries the v2.2.1+ manifest and auto-updates from
+   then on.
+
+Option 1 is the one to reach for on a fleet — no reinstall window, and it stays
+correct afterwards.
+
+## 4. Verify on a test machine
 
 1. Apply the force-install policy, restart the browser.
 2. `chrome://extensions` shows the extension installed and **managed** (not removable).

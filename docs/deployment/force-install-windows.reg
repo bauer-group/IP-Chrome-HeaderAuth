@@ -18,6 +18,28 @@ Windows Registry Editor Version 5.00
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionInstallForcelist]
 "1"="jncjhkagdjiiohjfmbpmlemdchbkjaib;https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml"
 
+; --- Rescue: unstick clients that installed a .crx WITHOUT update_url ---
+; Releases before v2.2.1 shipped a .crx whose manifest carried no update_url.
+; The forcelist URL above is used for the INITIAL INSTALL ONLY -- every later
+; update check reads the URL out of the installed extension's own manifest.
+; Those clients therefore fall back to the Web Store update service, find no
+; listing for this ID, and stay pinned to whatever they first installed.
+;
+; override_update_url makes the browser install AND UPDATE from the policy URL
+; regardless of what the installed manifest says, which unsticks them without a
+; reinstall. It is harmless to leave in place afterwards.
+; Apply, then restart the browser and use "Update extensions now" on the
+; extensions page to trigger the check immediately.
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"force_installed\",\"override_update_url\":true,\"update_url\":\"https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml\"}}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"force_installed\",\"override_update_url\":true,\"update_url\":\"https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml\"}}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge]
+"ExtensionSettings"="{\"jncjhkagdjiiohjfmbpmlemdchbkjaib\":{\"installation_mode\":\"force_installed\",\"override_update_url\":true,\"update_url\":\"https://github.com/bauer-group/IP-Chrome-HeaderAuth/releases/latest/download/updates.xml\"}}"
+
 ; --- Optional: push the global master switch via managed storage (Chrome) ---
 ; Full rule arrays are best pushed via the Admin console / Intune JSON
 ; (see managed-config.example.json); simple values map directly here.
