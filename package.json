@@ -2,7 +2,7 @@
   "name": "bauergroup-header-authenticator",
   "displayName": "BAUER GROUP - Header Authenticator",
   "description": "Injects a configurable authentication header (secret GUID) into requests to protected BAUER GROUP services.",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "type": "module",
   "private": true,
   "license": "MIT",
