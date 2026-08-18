@@ -1,3 +1,9 @@
+## [2.2.2](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.1...v2.2.2) (2026-08-18)
+
+### 🐛 Bug Fixes
+
+* **dnr:** serialised the rule refresh against its own storage writes ([938ee48](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/938ee4891e6f36de9385754e5ddb6456504db2cb))
+
 ## [2.2.1](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.0...v2.2.1) (2026-08-18)
 
 ### 🐛 Bug Fixes
