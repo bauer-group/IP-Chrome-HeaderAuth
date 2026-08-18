@@ -1,3 +1,9 @@
+## [2.1.2](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.1...v2.1.2) (2026-08-18)
+
+### 🐛 Bug Fixes
+
+* **dnr:** attached the auth header to all resource types ([a860cc5](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/a860cc561fd4da0139ba7c9c0975a39982cf913d))
+
 ## [2.1.1](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.1.0...v2.1.1) (2026-08-17)
 
 ### 🐛 Bug Fixes
