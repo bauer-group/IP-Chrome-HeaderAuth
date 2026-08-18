@@ -43,6 +43,34 @@ independent workflow, or `updates.xml` will eventually advertise a version whose
 `codebase` URL _into the CRX_, so a channel switch only takes effect from the
 next release onward; it is not retroactive.
 
+### Why the .crx manifest carries its own update_url
+
+The `update_url` in `ExtensionInstallForcelist` is used for the **initial install
+only**. Every later update check reads the URL from the **extension's own
+manifest** instead. A self-hosted `.crx` without that field therefore installs
+once and then never updates: Chrome falls back to the Web Store update service,
+finds no listing for this ID, and the client stays pinned to whatever it first
+installed — silently, with nothing to see on the policy side.
+
+`scripts/sign-crx.mjs` stamps the field in, on a **copy** of the build. It cannot
+go into `.output/chrome-mv3` itself, because the Chrome Web Store rejects an
+uploaded package whose manifest declares `update_url` — the two channels need two
+manifests. The extension ID is the hash of the pinned public key, so stamping does
+not move it.
+
+Verify on any published release:
+
+```bash
+curl -sSL -o /tmp/h.crx <crx URL>
+python3 - <<'EOF'
+import json, struct, zipfile, io
+b = open('/tmp/h.crx','rb').read()
+z = zipfile.ZipFile(io.BytesIO(b[12+struct.unpack('<I', b[8:12])[0]:]))
+m = json.loads(z.read('manifest.json'))
+print(m['version'], m.get('update_url', 'MISSING -- clients will never update'))
+EOF
+```
+
 ## 1. Force-install (the extension itself)
 
 Use **one** channel per machine — set `update_url` to either the self-hosted
