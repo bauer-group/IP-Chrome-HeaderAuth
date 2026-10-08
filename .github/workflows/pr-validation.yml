@@ -31,7 +31,7 @@ jobs:
       pull-requests: write
       security-events: write
       checks: write
-    uses: bauer-group/automation-templates/.github/workflows/modules-pr-validation.yml@main
+    uses: bauer-group/automation-templates/.github/workflows/modules-pr-validation.yml@fix/security-scan-gitguardian-trivy
     with:
       # Reads .github/config/commitlint.config.js. Without that file the step
       # degrades silently under continue-on-error rather than failing.
