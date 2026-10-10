@@ -1,3 +1,19 @@
+# Changelog
+
+All notable changes to this project are documented here. This file is maintained
+automatically by [semantic-release](https://github.com/semantic-release/semantic-release)
+on every release to `main`.
+
+## [2.2.4](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.3...v2.2.4) (2026-10-10)
+
+### 🐛 Bug Fixes
+
+* **deps:** updated vulnerable dev dependencies to patched versions ([d4caef8](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/d4caef8da178e269430e3b346bd85f6354e33787))
+
+### 🔧 Maintenance
+
+* **ci:** removed issue AI summary workflow ([93de027](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/93de027ee5540919a0a2d693673f19b57478d728)), references [bauer-group/automation-templates#105](https://github.com/bauer-group/automation-templates/issues/105)
+
 ## [2.2.3](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.2...v2.2.3) (2026-08-18)
 
 ### 🐛 Bug Fixes
