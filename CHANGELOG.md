@@ -4,6 +4,15 @@ All notable changes to this project are documented here. This file is maintained
 automatically by [semantic-release](https://github.com/semantic-release/semantic-release)
 on every release to `main`.
 
+## [2.2.5](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.4...v2.2.5) (2026-11-09)
+
+### 🐛 Bug Fixes
+
+* **deps:** bump fast-uri from 3.1.8 to 3.1.9 ([#24](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/24)) ([181dbfe](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/181dbfedbecddc0b4cdb01dde644f9b6ed9388c9))
+* **deps:** bump undici from 8.11.2 to 8.12.4 ([#23](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/23)) [skip ci] ([0d3c4da](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/0d3c4da80b18fd92954b8ae2ff83824ec7e1eade))
+* **deps:** bump zod from 4.4.3 to 4.6.7 ([#26](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/26)) [skip ci] ([1d1a064](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/1d1a064dcd83f031d386ee40768a52160417a58c))
+* **deps:** updated vite to 8.3.7 ([adea795](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/adea795a781ae97f661fac28f4d881f65d250892)), references [#22](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/22) [#28](https://github.com/bauer-group/IP-Chrome-HeaderAuth/issues/28)
+
 ## [2.2.4](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.3...v2.2.4) (2026-10-10)
 
 ### 🐛 Bug Fixes
