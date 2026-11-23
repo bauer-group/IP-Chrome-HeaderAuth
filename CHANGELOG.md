@@ -4,6 +4,12 @@ All notable changes to this project are documented here. This file is maintained
 automatically by [semantic-release](https://github.com/semantic-release/semantic-release)
 on every release to `main`.
 
+## [2.2.7](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.6...v2.2.7) (2026-11-23)
+
+### 🐛 Bug Fixes
+
+* **deps:** bump the npm group across 1 directory with 10 updates ([1b7df0b](https://github.com/bauer-group/IP-Chrome-HeaderAuth/commit/1b7df0b627db1c025144b7c0785d496d613efb25))
+
 ## [2.2.6](https://github.com/bauer-group/IP-Chrome-HeaderAuth/compare/v2.2.5...v2.2.6) (2026-11-09)
 
 ### 🐛 Bug Fixes
