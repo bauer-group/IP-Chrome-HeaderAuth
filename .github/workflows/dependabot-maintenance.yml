@@ -1,0 +1,64 @@
+# =============================================================================
+# Dependabot Maintenance - IP-Chrome-HeaderAuth
+# =============================================================================
+# Merges Dependabot PRs once the PR CI that builds and tests them has passed,
+# using the reusable workflow from bauer-group/automation-templates
+# (docs/workflows/docker-maintenance.md).
+#
+# Trigger scope: no `paths:` filter, so every Dependabot PR - whatever its
+# ecosystem - gets an explicit decision (merged, or left open with an
+# annotation and a job summary) instead of silently staying open.
+# - npm: Dependabot changes package.json and package-lock.json. ci.yml
+#   runs on every pull request to main (no paths: filter), on Node 24 and
+#   26: npm ci, lint, format check, typecheck, vitest with coverage, npm
+#   audit and the Chrome and Firefox builds - that run must pass.
+#   pr-validation.yml (commit lint, secret scan, licenses, dependency
+#   review) runs on every PR too; if it fails, the PR stays open.
+# - GitHub Actions updates and any other PR that changes .github/ are never
+#   merged automatically (guard of the reusable workflow) - merge by hand.
+#
+# Update types: patch and minor are merged (default merge-update-types),
+# majors stay open for review. Below 1.0.0 a minor (0.y.z) or 0.0.z patch
+# update counts as major, and a grouped PR counts as its strictest update,
+# so dependabot.yml keeps 0.x packages out of the minor/patch group.
+#
+# No release-workflow: npm updates use fix(deps), a PATCH release, but
+# release.yml does not pin its semantic release to the tested commit
+# (ref: github.sha, required for release-workflow) and publishes the
+# extension. The merge (GITHUB_TOKEN) starts no push workflow, so merged
+# updates are released with the next push to main - .github/ pushes
+# included, since release.yml ignores only *.md and docs/** - or a manual
+# run, which then ships every fix(deps) merge collected since the last one.
+#
+# Timeouts: the reusable workflow sets its own (75 min without
+# release-workflow); a job that calls a reusable workflow cannot declare
+# timeout-minutes.
+# =============================================================================
+
+name: 🤖 Dependabot Maintenance
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# The reusable workflow declares no permissions of its own - the token has
+# exactly these. The three read scopes are needed in private repositories and
+# keep the workflow working should this repository ever be made private.
+permissions:
+  contents: write       # merge
+  pull-requests: write  # approve, read the PR
+  checks: read          # check runs and suites
+  statuses: read        # commit statuses
+  actions: read         # workflow runs
+
+jobs:
+  maintenance:
+    name: Auto-merge Dependabot PRs
+    uses: bauer-group/automation-templates/.github/workflows/docker-maintenance-dependabot.yml@main
+    with:
+      # The PR CI that builds and tests the update; a PR it did not run for
+      # stays open as "not tested".
+      required-workflows: .github/workflows/ci.yml
+      merge-method: 'squash'
+      auto-approve: true
+    secrets: inherit
