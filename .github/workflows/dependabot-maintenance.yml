@@ -45,11 +45,11 @@ on:
 # exactly these. The three read scopes are needed in private repositories and
 # keep the workflow working should this repository ever be made private.
 permissions:
-  contents: write       # merge
-  pull-requests: write  # approve, read the PR
-  checks: read          # check runs and suites
-  statuses: read        # commit statuses
-  actions: read         # workflow runs
+  contents: write # merge
+  pull-requests: write # approve, read the PR
+  checks: read # check runs and suites
+  statuses: read # commit statuses
+  actions: read # workflow runs
 
 jobs:
   maintenance:
